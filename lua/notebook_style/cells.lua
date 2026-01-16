@@ -9,7 +9,11 @@ function M.find_delimiters(bufnr, pattern)
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
   for i, line in ipairs(lines) do
-    if line:match(pattern) then
+    -- Normalize by stripping leading whitespace and comment markers so that
+    -- lines like `# ````, `   # ````, etc. can still be treated as
+    -- delimiters when the pattern expects fences at the start.
+    local normalized = line:gsub("^[%s#]*", "")
+    if normalized:match(pattern) then
       table.insert(delimiters, i - 1)  -- 0-indexed
     end
   end
