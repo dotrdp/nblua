@@ -79,9 +79,10 @@ function M.enable(bufnr)
       end,
     })
 
-    -- Update when window is resized
-    vim.api.nvim_create_autocmd('WinResized', {
+    -- Update when cursor moves
+    vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
       group = group,
+      buffer = bufnr,
       callback = function()
         update_cells(bufnr)
       end,
