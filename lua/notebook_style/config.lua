@@ -2,7 +2,7 @@ local M = {}
 
 M.defaults = {
   -- Cell delimiter pattern
-  cell_delimiter = "^#%s*%%%%",
+  cell_delimiter = "^```",
 
   -- Border style: 'solid', 'dashed', or 'double'
   border_style = 'solid',
@@ -42,12 +42,12 @@ M.defaults = {
   },
 
   -- Visibility options
-  hide_delimiter = true,  -- Hide # %% in normal/visual modes
+  hide_delimiter = true,  -- Hide delimiters in normal/visual modes
   hide_border_in_insert = true,  -- Hide borders in insert mode
 
   -- Cell marker (shown when delimiter is hidden)
   -- Use a nerd font icon for a nice visual indicator
-  cell_marker = ' ',  --  is the Python nerd font icon
+  cell_marker = '󰄛 ',  -- Code block icon
 
   -- Frame width configuration
   cell_width_percentage = 80,  -- Cell width as percentage of window width (1-100)

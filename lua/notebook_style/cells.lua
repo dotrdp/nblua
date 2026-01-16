@@ -25,43 +25,22 @@ end
 function M.get_cells(bufnr, delimiters, total_lines)
   local cells = {}
 
-  if #delimiters == 0 then
+  if #delimiters < 2 then
     return cells
   end
 
   local all_lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-  for i = 1, #delimiters do
+  -- Group delimiters in pairs (start and end)
+  for i = 1, #delimiters - 1, 2 do
     local start_line = delimiters[i]
-    local potential_end_line
-
-    -- Find potential end (line before next delimiter, or end of buffer)
-    if i < #delimiters then
-      potential_end_line = delimiters[i + 1] - 1
-    else
-      potential_end_line = total_lines - 1
-    end
-
-    -- Trim trailing blank lines from the cell
-    local end_line = potential_end_line
-    for line_idx = potential_end_line, start_line, -1 do
-      local line_content = all_lines[line_idx + 1] or ''  -- +1 because all_lines is 1-indexed
-      -- Check if line is not blank (has non-whitespace content)
-      if line_content:match('%S') then
-        end_line = line_idx
-        break
-      end
-      -- If we're at the delimiter line, stop there
-      if line_idx == start_line then
-        end_line = start_line
-        break
-      end
-    end
+    local end_line = delimiters[i + 1]
 
     table.insert(cells, {
       delimiter = start_line,
       start_line = start_line,
       end_line = end_line,
+      end_delimiter = end_line,
     })
   end
 

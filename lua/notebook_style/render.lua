@@ -44,23 +44,29 @@ function M.render_cell(bufnr, cell, show_borders, show_delimiter, frame_width, c
 
   -- Hide the delimiter line if configured
   if not show_delimiter and config.options.hide_delimiter then
-    -- Get the delimiter line content to calculate length
-    local delimiter_line = vim.api.nvim_buf_get_lines(bufnr, cell.delimiter, cell.delimiter + 1, false)[1] or ''
-
-    -- Replace the entire delimiter with a subtle marker
-    -- Use end_col as byte length for proper concealment
-    vim.api.nvim_buf_set_extmark(bufnr, M.ns, cell.delimiter, 0, {
-      end_row = cell.delimiter,
-      end_col = #delimiter_line,
+    -- Hide start delimiter
+    local start_delimiter_line = vim.api.nvim_buf_get_lines(bufnr, cell.start_line, cell.start_line + 1, false)[1] or ''
+    vim.api.nvim_buf_set_extmark(bufnr, M.ns, cell.start_line, 0, {
+      end_row = cell.start_line,
+      end_col = #start_delimiter_line,
       conceal = '',
     })
 
-    -- Add a subtle marker to show where the delimiter is
-    vim.api.nvim_buf_set_extmark(bufnr, M.ns, cell.delimiter, 0, {
+    vim.api.nvim_buf_set_extmark(bufnr, M.ns, cell.start_line, 0, {
       virt_text = { { cell_marker_text, 'NotebookCellDelimiter' } },
       virt_text_pos = 'overlay',
       hl_mode = 'combine',
     })
+
+    -- Hide end delimiter
+    if cell.end_delimiter then
+      local end_delimiter_line = vim.api.nvim_buf_get_lines(bufnr, cell.end_delimiter, cell.end_delimiter + 1, false)[1] or ''
+      vim.api.nvim_buf_set_extmark(bufnr, M.ns, cell.end_delimiter, 0, {
+        end_row = cell.end_delimiter,
+        end_col = #end_delimiter_line,
+        conceal = '',
+      })
+    end
   end
 
   if not show_borders then
@@ -76,7 +82,7 @@ function M.render_cell(bufnr, cell, show_borders, show_delimiter, frame_width, c
     local line_content = vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1] or ''
 
     local line_width
-    if line == cell.delimiter and not show_delimiter then
+    if (line == cell.start_line or line == cell.end_delimiter) and not show_delimiter then
       line_width = cell_marker_width
     else
       line_width = vim.fn.strdisplaywidth(line_content)
@@ -120,7 +126,7 @@ function M.render_cell(bufnr, cell, show_borders, show_delimiter, frame_width, c
       priority = 200,
     })
 
-    if line == cell.delimiter and not show_delimiter then
+    if (line == cell.start_line or line == cell.end_delimiter) and not show_delimiter then
       -- Place the delimiter row's right border exactly under the corner, even
       -- though the line itself is concealed (so there is no real EOL to anchor to).
       vim.api.nvim_buf_set_extmark(bufnr, M.ns, line, 0, {
