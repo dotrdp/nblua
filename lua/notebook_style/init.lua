@@ -80,9 +80,8 @@ function M.enable(bufnr)
     })
 
     -- Update when window is resized
-    vim.api.nvim_create_autocmd('VimResized', {
+    vim.api.nvim_create_autocmd('WinResized', {
       group = group,
-      buffer = bufnr,
       callback = function()
         update_cells(bufnr)
       end,
