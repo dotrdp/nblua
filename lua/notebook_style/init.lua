@@ -61,8 +61,8 @@ function M.enable(bufnr)
 
   -- Only set up auto-update autocommands if manual_render is disabled
   if not config.options.manual_render then
-    -- Update on text changes
-    vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
+    -- Update on text changes in insert mode only
+    vim.api.nvim_create_autocmd('TextChangedI', {
       group = group,
       buffer = bufnr,
       callback = function()
@@ -79,14 +79,6 @@ function M.enable(bufnr)
       end,
     })
 
-    -- Update when cursor moves
-    vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-      group = group,
-      buffer = bufnr,
-      callback = function()
-        update_cells(bufnr)
-      end,
-    })
   end
 
   -- Clean up on buffer delete
