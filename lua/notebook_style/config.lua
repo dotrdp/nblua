@@ -2,7 +2,8 @@ local M = {}
 
 M.defaults = {
   -- Cell delimiter pattern
-  cell_delimiter = "^```",
+  -- Match ``` possibly preceded by spaces or comment markers
+  cell_delimiter = "[%s#]*```",
 
   -- Border style: 'solid', 'dashed', or 'double'
   border_style = 'solid',
